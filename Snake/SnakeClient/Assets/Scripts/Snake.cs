@@ -1,15 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Snake : MonoBehaviour {
     [SerializeField] private Transform _head;
     [SerializeField] private Transform _directionPoint;
+    [SerializeField] private Tail _tailPrefab;
     [SerializeField] private float _speed = 2f;
     [SerializeField] private float _rotateSpeed = 90f;
 
     private Vector3 _targetDirection = Vector3.zero;
-    
+    private Tail _newTail;
+
+    public void Init(int detailCount) {
+        _newTail = Instantiate(_tailPrefab, transform.position, Quaternion.identity);
+        _newTail.Init(_head, _speed, detailCount);
+    }
+
     void Update() {
         Rotate();
         Move();
@@ -28,6 +33,10 @@ public class Snake : MonoBehaviour {
         transform.position += _head.forward * Time.deltaTime * _speed;
     }
 
+    public void Destroy() {
+        _newTail.Destroy();
+        Destroy(gameObject);
+    }
 
     /* //Реализация поворота от знатаков геометрии
      * public void LookAt(Vector3 cursorPosition) {
