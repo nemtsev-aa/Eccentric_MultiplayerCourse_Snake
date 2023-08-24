@@ -6,6 +6,7 @@ using System;
 using Unity.VisualScripting;
 
 public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
+    [SerializeField] private PlayerAim _playerAim;
     [SerializeField] private Controller _controllerPrefab;
     [SerializeField] private Snake _snakePrefab;
 
@@ -56,11 +57,15 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
     #region Player
     private void CreatePlayer(Player player) {
         Vector3 position = new Vector3(player.x, 0f, player.z);
-        Snake snake = Instantiate(_snakePrefab, position, Quaternion.identity);
+        Quaternion rotation = Quaternion.identity;
+        Snake snake = Instantiate(_snakePrefab, position, rotation);
         snake.Init(player.d);
 
+        PlayerAim playerAim = Instantiate(_playerAim, position, rotation);
+        playerAim.Init(snake.Speed);
+
         Controller controller = Instantiate(_controllerPrefab);
-        controller.Init(snake);
+        controller.Init(playerAim, player, snake);
     }
     #endregion
 

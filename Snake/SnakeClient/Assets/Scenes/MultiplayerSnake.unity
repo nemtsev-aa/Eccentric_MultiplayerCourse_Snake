@@ -5326,6 +5326,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _colyseusSettings: {fileID: 11400000, guid: 402f18cef6d72574d8a38b97fbb3a542, type: 2}
+  _playerAim: {fileID: 2878249674557702795, guid: cfc7bb40ebf86a44385ce8fb3a069e3e,
+    type: 3}
   _controllerPrefab: {fileID: 853913600590002645, guid: 5910f0c4fa623034293d9ba1db110045,
     type: 3}
   _snakePrefab: {fileID: 452535537707967491, guid: dd02dd68d0dde6c44b77c171c3d40a1c,

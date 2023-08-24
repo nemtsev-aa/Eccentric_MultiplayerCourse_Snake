@@ -1,11 +1,10 @@
 using UnityEngine;
 
 public class Snake : MonoBehaviour {
+    public float Speed { get { return _speed; } }
     [SerializeField] private Transform _head;
-    [SerializeField] private Transform _directionPoint;
     [SerializeField] private Tail _tailPrefab;
     [SerializeField] private float _speed = 2f;
-    [SerializeField] private float _rotateSpeed = 90f;
 
     private Vector3 _targetDirection = Vector3.zero;
     private Tail _newTail;
@@ -20,30 +19,15 @@ public class Snake : MonoBehaviour {
     }
 
     void Update() {
-        Rotate();
         Move();
     }
 
-    public void LerpRotation(Vector3 cursorPosition) {
-        _targetDirection = cursorPosition - _head.position;
-    }
-
     public void SetRotation(Vector3 pointToLook) {
-        _directionPoint.LookAt(pointToLook);
         _head.LookAt(pointToLook);
-    }
-
-    private void Rotate() {
-        Quaternion targetRotation = Quaternion.LookRotation(_targetDirection);
-        _head.rotation = Quaternion.RotateTowards(_head.rotation, targetRotation, Time.deltaTime * _rotateSpeed);
     }
 
     private void Move() {
         transform.position += _head.forward * Time.deltaTime * _speed;
-    }
-
-    public void GetMoveInfo(out Vector3 position) {
-        position = transform.position;
     }
 
     public void Destroy() {
