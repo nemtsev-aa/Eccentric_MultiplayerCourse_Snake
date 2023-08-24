@@ -38,6 +38,10 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
         _room.State.players.OnRemove += RemoveEnemy;
     }
 
+    public void SendMessage(string key, Dictionary<string, object> data) {
+        _room.Send(key, data);
+    }
+
     protected override void OnApplicationQuit() {
         base.OnApplicationQuit();
         LeaveRoom();
@@ -50,7 +54,8 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
 
     #region Player
     private void CreatePlayer(Player player) {
-        Snake snake = Instantiate(_snakePrefab);
+        Vector3 position = new Vector3(player.x, 0f, player.z);
+        Snake snake = Instantiate(_snakePrefab, position, Quaternion.identity);
         snake.Init(player.d);
 
         Controller controller = Instantiate(_controllerPrefab);

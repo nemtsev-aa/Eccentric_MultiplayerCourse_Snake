@@ -33,6 +33,10 @@ public class Snake : MonoBehaviour {
         transform.position += _head.forward * Time.deltaTime * _speed;
     }
 
+    public void GetMoveInfo(out Vector3 position) {
+        position = transform.position;
+    }
+
     public void Destroy() {
         _newTail.Destroy();
         Destroy(gameObject);
