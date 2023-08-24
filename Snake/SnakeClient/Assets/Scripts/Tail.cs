@@ -23,7 +23,7 @@ public class Tail : MonoBehaviour {
     }
 
     private void SetDetailCount(int detailCount) {
-        if (_details.Count + 1 == detailCount) return;
+        if (_details.Count - 1 == detailCount) return;
 
         int diff = (_details.Count - 1) - detailCount;
         if (diff < 1) {
@@ -71,8 +71,6 @@ public class Tail : MonoBehaviour {
 
         for (int i = 0; i < _details.Count; i++) {
             _details[i].position = Vector3.Lerp(_positionHistory[i + 1], _positionHistory[i], distance / _detailDistance);
-            //Vector3 direction = (_positionHistory[i] - _positionHistory[i + 1]).normalized;
-            //_details[i].position += direction * Time.deltaTime * _snakeSpeed;
         }
     }
 
