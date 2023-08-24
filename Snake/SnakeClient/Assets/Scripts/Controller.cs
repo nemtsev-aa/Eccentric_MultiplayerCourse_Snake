@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Controller : MonoBehaviour {
+    [SerializeField] private float _cameraOffsetY = 15;
     [SerializeField] private Transform _cursor;
     private Snake _snake;
     private Camera _camera;
@@ -15,12 +17,15 @@ public class Controller : MonoBehaviour {
         _snake = snake;
         _camera = Camera.main;
         _plane = new Plane(Vector3.up, Vector3.zero);
+
+        _snake.AddComponent<CameraManager>().Init(_cameraOffsetY);
+
     }
 
     void Update() {
         if (Input.GetMouseButton(0)) {
             MoveCursor();
-            _snake.LookAt(_cursor.position);
+            _snake.LerpRotation(_cursor.position);
         }
 
         SendMove();

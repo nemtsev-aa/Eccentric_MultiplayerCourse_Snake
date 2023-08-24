@@ -15,13 +15,22 @@ public class Snake : MonoBehaviour {
         _newTail.Init(_head, _speed, detailCount);
     }
 
+    public void SetDetailCount(int detailCount) {
+        _newTail.SetDetailCount(detailCount);
+    }
+
     void Update() {
         Rotate();
         Move();
     }
 
-    public void LookAt(Vector3 cursorPosition) {
+    public void LerpRotation(Vector3 cursorPosition) {
         _targetDirection = cursorPosition - _head.position;
+    }
+
+    public void SetRotation(Vector3 pointToLook) {
+        _directionPoint.LookAt(pointToLook);
+        _head.LookAt(pointToLook);
     }
 
     private void Rotate() {
@@ -44,7 +53,7 @@ public class Snake : MonoBehaviour {
 
     /* //Реализация поворота от знатаков геометрии
      * public void LookAt(Vector3 cursorPosition) {
-        _directionPoint.LookAt(cursorPosition);
+       _targetDirection = cursorPosition - _head.position; 
     }
 
     private void Rotate() {

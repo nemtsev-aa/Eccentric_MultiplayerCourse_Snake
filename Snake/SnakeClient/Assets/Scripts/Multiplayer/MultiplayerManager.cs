@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Colyseus;
 using System;
+using Unity.VisualScripting;
 
 public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
     [SerializeField] private Controller _controllerPrefab;
@@ -64,12 +65,22 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
     #endregion
 
     #region Enemy
+    private Dictionary<string, EnemyController> _enemies = new Dictionary<string, EnemyController>();
     private void CreateEnemy(string key, Player player) {
-        
+        Vector3 position = new Vector3(player.x, 0f, player.z);
+        Snake snake = Instantiate(_snakePrefab, position, Quaternion.identity);
+        snake.Init(player.d);
+
+        EnemyController newEnemy = snake.AddComponent<EnemyController>();
+        _enemies.Add(key, newEnemy);
+        newEnemy.Init(player, snake);
     }
 
     private void RemoveEnemy(string key, Player value) {
-        
+        if (_enemies.ContainsKey(key) == false) Debug.LogError("ѕопытка удалени€ врага, отсутствующегов списке!");
+        EnemyController enemy = _enemies[key];
+        enemy.Destroy();
+        _enemies.Remove(key);
     }
     #endregion
 }
