@@ -1,11 +1,11 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Colyseus;
-using System;
 using Unity.VisualScripting;
 
 public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
+    [field: SerializeField] public SkinsManager Skins { get; private set; }
+
     [SerializeField] private PlayerAim _playerAim;
     [SerializeField] private Controller _controllerPrefab;
     [SerializeField] private Snake _snakePrefab;
@@ -18,12 +18,14 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
         base.Awake();
         DontDestroyOnLoad(gameObject);
         InitializeClient();
-
-        Connection();
     }
 
-    private async void Connection() {
-        _room = await client.JoinOrCreate<State>(_gameRoomName);
+   public async void Connection(int skinId) {
+        Dictionary<string, object> data = new Dictionary<string, object>() {
+            {"sId", skinId }
+        };
+
+        _room = await client.JoinOrCreate<State>(_gameRoomName, data);
         _room.OnStateChange += OnChanged;
     }
 
@@ -59,13 +61,17 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
         Vector3 position = new Vector3(player.x, 0f, player.z);
         Quaternion rotation = Quaternion.identity;
         Snake snake = Instantiate(_snakePrefab, position, rotation);
-        snake.Init(player.d);
+        
+        SkinData skin = Skins.GetSkin(player.sId);
+        snake.Init(player.d, skin);
 
         PlayerAim playerAim = Instantiate(_playerAim, position, rotation);
         playerAim.Init(snake.Speed);
 
         Controller controller = Instantiate(_controllerPrefab);
         controller.Init(playerAim, player, snake);
+
+        PointerManager.Instance.SetPlayerTransform(playerAim.transform);
     }
     #endregion
 
@@ -74,16 +80,21 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
     private void CreateEnemy(string key, Player player) {
         Vector3 position = new Vector3(player.x, 0f, player.z);
         Snake snake = Instantiate(_snakePrefab, position, Quaternion.identity);
-        snake.Init(player.d);
+        SkinData skin = Skins.GetSkin(player.sId);
+        snake.Init(player.d, skin);
 
         EnemyController newEnemy = snake.AddComponent<EnemyController>();
-        _enemies.Add(key, newEnemy);
+        EnemyHealth enemyHealth = snake.AddComponent<EnemyHealth>();
+        EnemyPointer enemyPointer = snake.AddComponent<EnemyPointer>();
+        enemyPointer.Init(enemyHealth);
         newEnemy.Init(player, snake);
+        _enemies.Add(key, newEnemy);
     }
 
     private void RemoveEnemy(string key, Player value) {
         if (_enemies.ContainsKey(key) == false) Debug.LogError("ѕопытка удалени€ врага, отсутствующегов списке!");
         EnemyController enemy = _enemies[key];
+        PointerManager.Instance.RemoveFromList(enemy.transform.GetComponent<EnemyPointer>());
         enemy.Destroy();
         _enemies.Remove(key);
     }

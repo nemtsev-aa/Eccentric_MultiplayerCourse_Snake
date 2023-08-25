@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1185897574668269872}
   - component: {fileID: 1185897574668269871}
   - component: {fileID: 213407652212540700}
+  - component: {fileID: 1331551732851372716}
   m_Layer: 0
   m_Name: Tail
   m_TagString: Untagged
@@ -48,6 +49,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _detailPrefab: {fileID: 2563386881065523102, guid: 0110306fb43f7874d897a34ff72e4a30,
     type: 3}
+  _appearanceManager: {fileID: 1331551732851372716}
   _detailDistance: 1
 --- !u!65 &213407652212540700
 BoxCollider:
@@ -62,6 +64,22 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0.5, z: 0}
+--- !u!114 &1331551732851372716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1185897574668269870}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af76a88ec9e02f440818c893f72652f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _currentSnakePart: 2
+  _skinsManager: {fileID: 0}
+  _renderers:
+  - {fileID: 6134143751130215238}
 --- !u!1001 &1556936254650637497
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -134,6 +152,12 @@ PrefabInstance:
 --- !u!4 &1302068312147868498 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 6f36cd16b6c365f4cad37fb84deec7ec,
+    type: 3}
+  m_PrefabInstance: {fileID: 1556936254650637497}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6134143751130215238 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -4558906730386509825, guid: 6f36cd16b6c365f4cad37fb84deec7ec,
     type: 3}
   m_PrefabInstance: {fileID: 1556936254650637497}
   m_PrefabAsset: {fileID: 0}

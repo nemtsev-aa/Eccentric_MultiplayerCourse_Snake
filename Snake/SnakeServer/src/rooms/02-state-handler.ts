@@ -5,6 +5,7 @@ export class Player extends Schema {
     @type("number") x = Math.floor(Math.random() * 256)-128;
     @type("number") z = Math.floor(Math.random() * 256)-128;
     @type("uint8") d = 2;
+    @type("uint8") sId = 0;
 }
 
 export class State extends Schema {
@@ -13,8 +14,14 @@ export class State extends Schema {
 
     something = "This attribute won't be sent to the client-side";
 
-    createPlayer(sessionId: string) {
-        this.players.set(sessionId, new Player());
+    createPlayer(sessionId: string, sId: number) {
+        const player = new Player();
+        player.sId = sId;
+        this.players.set(sessionId, player);
+    }
+
+    skinPlayer (sessionId: string, data: any) {
+        this.players.get(sessionId).sId = data.sId;
     }
 
     removePlayer(sessionId: string) {
@@ -38,14 +45,19 @@ export class StateHandlerRoom extends Room<State> {
         this.onMessage("move", (client, data) => {
             this.state.movePlayer(client.sessionId, data);
         });
+
+        this.onMessage("sId", (client, data) => {
+            this.state.skinPlayer(client.sessionId, data); 
+        });
     }
 
     onAuth(client, options, req) {
         return true;
     }
 
-    onJoin (client: Client) {
-        this.state.createPlayer(client.sessionId);
+    onJoin (client: Client, data: any) {
+        console.log("onJoin created!", data);
+        this.state.createPlayer(client.sessionId, data.sId);
     }
 
     onLeave (client) {
@@ -55,5 +67,4 @@ export class StateHandlerRoom extends Room<State> {
     onDispose () {
         console.log("Dispose StateHandlerRoom");
     }
-
 }

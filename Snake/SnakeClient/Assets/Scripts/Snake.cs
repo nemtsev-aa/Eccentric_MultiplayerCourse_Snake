@@ -4,18 +4,30 @@ public class Snake : MonoBehaviour {
     public float Speed { get { return _speed; } }
     [SerializeField] private Transform _head;
     [SerializeField] private Tail _tailPrefab;
+    [SerializeField] private AppearanceManager _appearanceManager;
+
     [SerializeField] private float _speed = 2f;
 
     private Vector3 _targetDirection = Vector3.zero;
     private Tail _newTail;
 
-    public void Init(int detailCount) {
+    public void Init(int detailCount, SkinData skin) {
         _newTail = Instantiate(_tailPrefab, transform.position, Quaternion.identity);
         _newTail.Init(_head, _speed, detailCount);
+
+        _appearanceManager.SetSkin(skin);
+        _newTail.SetSkinFromDetails(skin);
     }
 
     public void SetDetailCount(int detailCount) {
         _newTail.SetDetailCount(detailCount);
+    }
+
+    public void SetSkin(SkinData skin) {
+        if (skin != null) {
+            _appearanceManager.SetSkin(skin);
+            _newTail.SetSkinFromTail(skin);
+        }
     }
 
     void Update() {
@@ -33,6 +45,7 @@ public class Snake : MonoBehaviour {
     public void Destroy() {
         _newTail.Destroy();
         Destroy(gameObject);
+
     }
 
     /* //Реализация поворота от знатаков геометрии

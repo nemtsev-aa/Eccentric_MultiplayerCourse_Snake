@@ -13,6 +13,7 @@ public class Controller : MonoBehaviour {
     private Camera _camera;
     private Plane _plane;
     private MultiplayerManager _multiplayerManager;
+    private bool _hideCursor;
 
     public void Init(PlayerAim aim, Player player, Snake snake) {
         _multiplayerManager = MultiplayerManager.Instance;
@@ -29,6 +30,10 @@ public class Controller : MonoBehaviour {
     }
 
     void Update() {
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            Cursor.lockState = _hideCursor ? CursorLockMode.Locked : CursorLockMode.None;
+        }
+
         if (Input.GetMouseButton(0)) {
             MoveCursor();
             _aim.SetTargetDitection(_cursor.position);

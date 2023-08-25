@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Tail : MonoBehaviour {
+    
     [SerializeField] private Transform _detailPrefab;
+    [SerializeField] private AppearanceManager _appearanceManager;
     [SerializeField] private float _detailDistance = 1f;
 
     private Transform _head;
@@ -11,6 +14,7 @@ public class Tail : MonoBehaviour {
     private List<Transform> _details = new List<Transform>();
     private List<Vector3> _positionHistory = new List<Vector3>();
     private List<Quaternion> _rotationHistory = new List<Quaternion>();
+
     public void Init(Transform head, float speed, int detailCount) {
         _head = head;
         _snakeSpeed = speed;
@@ -44,6 +48,7 @@ public class Tail : MonoBehaviour {
         Vector3 position = _details[_details.Count - 1].position;
         Quaternion rotation = _details[_details.Count - 1].rotation;
         Transform newDetail = Instantiate(_detailPrefab, position, rotation);
+
         _details.Insert(0, newDetail);
         _positionHistory.Add(position);
         _rotationHistory.Add(rotation);
@@ -60,6 +65,18 @@ public class Tail : MonoBehaviour {
         Destroy(detail.gameObject);
         _positionHistory.RemoveAt(_positionHistory.Count - 1);
         _rotationHistory.RemoveAt(_rotationHistory.Count - 1);
+    }
+
+    public void SetSkinFromDetails(SkinData skin) {
+        for (int i = 0; i < _details.Count; i++) {
+            _details[i].GetComponent<AppearanceManager>().SetSkin(skin);
+        }
+    }
+
+    public void SetSkinFromTail(SkinData skin) {
+        for (int i = 0; i < _details.Count; i++) {
+            _details[i].GetComponent<AppearanceManager>().SetSkin(skin);
+        }
     }
 
     void Update() {
