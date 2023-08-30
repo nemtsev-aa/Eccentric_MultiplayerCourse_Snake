@@ -96,6 +96,8 @@ public class Tail : MonoBehaviour {
         }
     }
 
+
+
     void Update() {
         Vector3 headoffset = _head.position - _positionHistory[0];
         float distance = headoffset.magnitude;
@@ -119,9 +121,39 @@ public class Tail : MonoBehaviour {
         }
     }
 
+    public DetailPositions GetDetailPositions() {
+        int detailsCount = _details.Count;
+        DetailPosition[] ds = new DetailPosition[detailsCount];
+        for (int i = 0; i < detailsCount; i++) {
+            ds[i] = new DetailPosition() {
+                X = _details[i].position.x,
+                Z = _details[i].position.z
+            };
+        }
+
+        DetailPositions detailPosition = new DetailPositions() {
+            DS = ds
+        };
+        
+        return detailPosition;
+    }
+
     public void Destroy() {
         for (int i = 0; i < _details.Count; i++) {
             Destroy(_details[i].gameObject);
         }
     }
 }
+
+[Serializable]
+public struct DetailPosition {
+    public float X;
+    public float Z;
+}
+
+[Serializable]
+public struct DetailPositions {
+    public string ID;
+    public DetailPosition[] DS;
+}
+

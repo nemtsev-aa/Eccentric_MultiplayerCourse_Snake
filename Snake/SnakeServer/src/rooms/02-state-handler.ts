@@ -19,6 +19,7 @@ export class State extends Schema {
     @type({ map: Player }) players = new MapSchema<Player>();
     @type([Vector2Float]) apples = new ArraySchema<Vector2Float>();
     appleLastId = 0;
+    gameOverIDs = [];
 
     createApple() {
         const apple = new Vector2Float();
@@ -56,6 +57,36 @@ export class State extends Schema {
         this.players.get(sessionId).x = movement.x;
         this.players.get(sessionId).z = movement.z;
     }
+
+    gameOver(data: any) {
+        const detailsPosition = JSON.parse(data);
+        const clientID = detailsPosition.ID;
+
+        const gameOverID = this.gameOverIDs.find((value) => value === clientID);
+        if (gameOverID !== undefined) return; 
+        this.gameOverIDs.push(clientID);
+
+        this.delayClearGameOverIDs(clientID);
+        if(this.players.has(clientID)) this.removePlayer(clientID);
+            
+        for(let i=0; i < detailsPosition.DS.length; i++) {
+            const apple = new Vector2Float();
+            apple.id = this.appleLastId++;
+            apple.x = detailsPosition.DS[i].X;
+            apple.z = detailsPosition.DS[i].Z;
+
+            this.apples.push(apple);  
+        }
+    }
+
+    async delayClearGameOverIDs(clientID){
+        await new Promise(resolve => setTimeout(resolve, 10000));
+
+        const index = this.gameOverIDs.findIndex((value)=> value === clientID);
+        if(index <= -1) return;
+
+        this.gameOverIDs.splice(index, 1);
+    }
 }
 
 export class StateHandlerRoom extends Room<State> {
@@ -83,6 +114,10 @@ export class StateHandlerRoom extends Room<State> {
         }
 
         console.log("apples created!", this.state.apples.length);
+
+        this.onMessage("gameOver", (client, data) => {
+            this.state.gameOver(data);
+        });
     }
 
     onAuth(client, options, req) {

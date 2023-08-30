@@ -53,6 +53,7 @@ public class PlayerAim : MonoBehaviour {
     }
 
     private void GameOver() {
+        
         FindObjectOfType<Controller>().Destroy();
         Destroy(gameObject);
     }

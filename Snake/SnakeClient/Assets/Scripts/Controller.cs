@@ -6,7 +6,7 @@ using UnityEngine;
 public class Controller : MonoBehaviour {
     [SerializeField] private float _cameraOffsetY = 15;
     [SerializeField] private Transform _cursor;
-
+    private string _clientID;
     private Player _player;
     private PlayerAim _aim;
     private Snake _snake;
@@ -15,9 +15,9 @@ public class Controller : MonoBehaviour {
     private MultiplayerManager _multiplayerManager;
     private bool _hideCursor;
 
-    public void Init(PlayerAim aim, Player player, Snake snake) {
+    public void Init(string clientID, PlayerAim aim, Player player, Snake snake) {
         _multiplayerManager = MultiplayerManager.Instance;
-
+        _clientID = clientID;
         _player = player;
         _aim = aim;
 
@@ -90,7 +90,7 @@ public class Controller : MonoBehaviour {
             _camera.transform.parent = null;
             _player.OnChange -= OnChange;
         }   
-        _snake.Destroy();
+        _snake.Destroy(_clientID);
         Destroy(gameObject);
     }
 }

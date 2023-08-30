@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Colyseus;
 using Unity.VisualScripting;
-using System;
 
 public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
     [field: SerializeField] public SkinsManager Skins { get; private set; }
@@ -23,7 +22,7 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
         InitializeClient();
     }
 
-   public async void Connection(int skinId) {
+    public async void Connection(int skinId) {
         Dictionary<string, object> data = new Dictionary<string, object>() {
             {"sId", skinId }
         };
@@ -53,6 +52,10 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
         _room.Send(key, data);
     }
 
+    public void SendMessage(string key, string data) {
+        _room.Send(key, data);
+    }
+
     protected override void OnApplicationQuit() {
         base.OnApplicationQuit();
         LeaveRoom();
@@ -68,7 +71,7 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
         Vector3 position = new Vector3(player.x, 0f, player.z);
         Quaternion rotation = Quaternion.identity;
         Snake snake = Instantiate(_snakePrefab, position, rotation);
-        
+
         SkinData skin = Skins.GetSkin(player.sId);
         snake.Init(player.d, skin, true);
 
@@ -76,7 +79,7 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
         playerAim.Init(snake.GetHeadTransform, snake.Speed);
 
         Controller controller = Instantiate(_controllerPrefab);
-        controller.Init(playerAim, player, snake);
+        controller.Init(_room.SessionId, playerAim, player, snake);
 
         PointerManager.Instance.SetPlayerTransform(playerAim.transform);
     }
@@ -94,12 +97,16 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
         EnemyHealth enemyHealth = snake.AddComponent<EnemyHealth>();
         EnemyPointer enemyPointer = snake.AddComponent<EnemyPointer>();
         enemyPointer.Init(enemyHealth);
-        newEnemy.Init(player, snake);
+        newEnemy.Init(key, player, snake);
         _enemies.Add(key, newEnemy);
     }
 
     private void RemoveEnemy(string key, Player value) {
-        if (_enemies.ContainsKey(key) == false) Debug.LogError("ѕопытка удалени€ врага, отсутствующегов списке!");
+        if (_enemies.ContainsKey(key) == false || _enemies.Count == 0) {
+            Debug.LogError("ѕопытка удалени€ врага, отсутствующегов списке!");
+            return;
+        }
+
         EnemyController enemy = _enemies[key];
         PointerManager.Instance.RemoveFromList(enemy.transform.GetComponent<EnemyPointer>());
         enemy.Destroy();

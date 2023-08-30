@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyController : MonoBehaviour {
+    private string _clientID;
     private Player _player;
     private Snake _snake;
 
-    public void Init(Player player, Snake snake) {
+    public void Init(string clientID, Player player, Snake snake) {
+        _clientID = clientID;
         _snake = snake;
         _player = player;
         _player.OnChange += OnChange;
@@ -36,6 +38,6 @@ public class EnemyController : MonoBehaviour {
 
     public void Destroy() {
         if (_player != null) _player.OnChange -= OnChange;
-        _snake.Destroy();
+        _snake.Destroy(_clientID);
     }
 }

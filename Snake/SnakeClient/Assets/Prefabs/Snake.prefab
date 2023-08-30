@@ -14,7 +14,7 @@ GameObject:
   m_Layer: 0
   m_Name: Snake
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 757e2a5ed60c41547b776b81540b87b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _playerLayer: 6
   _head: {fileID: 452535539501080861}
   _tailPrefab: {fileID: 1185897574668269871, guid: fa55b3f4451642d48b71aacabf796f7a,
     type: 3}
