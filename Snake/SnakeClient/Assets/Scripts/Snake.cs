@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class Snake : MonoBehaviour {
     public float Speed { get { return _speed; } }
+    public Transform GetHeadTransform { get { return _head.transform; } }
+
     [SerializeField] private Transform _head;
     [SerializeField] private Tail _tailPrefab;
     [SerializeField] private AppearanceManager _appearanceManager;

@@ -2,6 +2,7 @@ import { Room, Client } from "colyseus";
 import { Schema, type, MapSchema, ArraySchema } from "@colyseus/schema";
 
 export class Vector2Float extends Schema{
+    @type("uint32") id = 0;
     @type("number") x = Math.floor(Math.random() * 256)-128;
     @type("number") z = Math.floor(Math.random() * 256)-128;
 }
@@ -16,9 +17,21 @@ export class Player extends Schema {
 export class State extends Schema {
     @type({ map: Player }) players = new MapSchema<Player>();
     @type([Vector2Float]) apples = new ArraySchema<Vector2Float>();
-   
-    createApple(){
-        this.apples.push(new Vector2Float());
+    appleLastId = 0;
+
+    createApple() {
+        const apple = new Vector2Float();
+        apple.id = this.appleLastId;
+        this.apples.push(apple);
+        this.appleLastId++;
+    }
+
+    collectApple(player: Player, data: any) {
+        const apple = this.apples.find((value) => (value.id === data.id));
+        if (apple === undefined) return;
+
+        apple.x = Math.floor(Math.random() * 256)-128;
+        apple.z = Math.floor(Math.random() * 256)-128;
     }
 
     createPlayer(sessionId: string, sId: number) {
@@ -56,9 +69,16 @@ export class StateHandlerRoom extends Room<State> {
             this.state.skinPlayer(client.sessionId, data); 
         });
 
-        for(let i=0; i<this.startAppleCount; i++){
+        this.onMessage("collect", (client, data) => {
+            const player = this.state.players.get(client.sessionId);
+            this.state.collectApple(player, data); 
+        });
+
+        for(let i=0; i < this.startAppleCount; i++){
             this.state.createApple();
         }
+
+        console.log("apples created!", this.state.apples.length);
     }
 
     onAuth(client, options, req) {
