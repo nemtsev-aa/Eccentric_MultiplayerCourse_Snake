@@ -10,26 +10,34 @@ public enum SnakePart {
 public class AppearanceManager : MonoBehaviour {
     [SerializeField] private SnakePart _currentSnakePart;
     [SerializeField] private List<Renderer> _renderers = new List<Renderer>();
+    private SkinData _skin;
 
     public void SetSkin(SkinData skin) {
+        _skin = skin;
+        Material material = GetMaterialFromSnakePart();
+        foreach (Renderer iRenderer in _renderers) {
+            iRenderer.material = material;
+        }
+    }
+
+    public Material GetMaterialFromSnakePart() {
         Material material = null;
 
         switch (_currentSnakePart) {
             case SnakePart.Head:
-                material = skin.HeadMaterial;
+                material = _skin.HeadMaterial;
                 break;
             case SnakePart.Detail:
-                material = skin.DetailMaterial;
+                material = _skin.DetailMaterial;
                 break;
             case SnakePart.Tail:
-                material = skin.TailMaterial;
+                material = _skin.TailMaterial;
                 break;
             default:
                 break;
         }
 
-        foreach (Renderer iRenderer in _renderers) {
-            iRenderer.material = material;
-        }
+        return material;
     }
+
 }

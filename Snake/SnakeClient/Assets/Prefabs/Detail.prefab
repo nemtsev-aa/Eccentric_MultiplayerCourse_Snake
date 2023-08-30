@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2563386881065523102}
   - component: {fileID: 4905712503157101860}
   - component: {fileID: 684575051675174920}
+  - component: {fileID: 4888372833552132206}
   m_Layer: 0
   m_Name: Detail
   m_TagString: Untagged
@@ -60,9 +61,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _currentSnakePart: 1
-  _skinsManager: {fileID: 0}
   _renderers:
   - {fileID: 9010226784953940454}
+--- !u!114 &4888372833552132206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2563386881065523103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6dba11fea6803c74daf3b1ff51441d9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _deathParticle: {fileID: 6337447475170569117, guid: f18bc8e86746677419b9e0340a6aa844,
+    type: 3}
 --- !u!1001 &4445409066831779353
 PrefabInstance:
   m_ObjectHideFlags: 0

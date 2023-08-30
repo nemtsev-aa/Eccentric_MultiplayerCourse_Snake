@@ -18,6 +18,7 @@ public class PlayerAim : MonoBehaviour {
     private void Update() {
         Rotate();
         Move();
+        CheckExit();
     }
 
     private void FixedUpdate() {
@@ -30,9 +31,22 @@ public class PlayerAim : MonoBehaviour {
             if (colliders[i].TryGetComponent(out Apple apple)) {
                 apple.Collect();
             } else {
-                GameOver();
+                if (colliders[i].GetComponentInParent<Snake>()) {
+                    Transform transformEnemy = colliders[i].transform;
+                    float playerAngle = Vector3.Angle(transformEnemy.position - _snakeHead.position, transform.forward);
+                    float enemyAngle = Vector3.Angle(_snakeHead.position - transformEnemy.position, transformEnemy.forward);
+                    if (playerAngle < enemyAngle + 5) {
+                        GameOver();
+                    }
+                } else {
+                    GameOver();
+                }
             }
         }
+    }
+
+    private void CheckExit() {
+        if (Mathf.Abs(_snakeHead.position.x) > 128 || Mathf.Abs(_snakeHead.position.z) > 128) GameOver();
     }
 
     private void Move() {
