@@ -12,8 +12,10 @@ public class Snake : MonoBehaviour {
 
     private Vector3 _targetDirection = Vector3.zero;
     private Tail _newTail;
+    private SkinData _skin; 
 
     public void Init(int detailCount, SkinData skin) {
+        _skin = skin;
         _newTail = Instantiate(_tailPrefab, transform.position, Quaternion.identity);
         _newTail.Init(_head, _speed, detailCount);
 
@@ -23,13 +25,7 @@ public class Snake : MonoBehaviour {
 
     public void SetDetailCount(int detailCount) {
         _newTail.SetDetailCount(detailCount);
-    }
-
-    public void SetSkin(SkinData skin) {
-        if (skin != null) {
-            _appearanceManager.SetSkin(skin);
-            _newTail.SetSkinFromTail(skin);
-        }
+        _newTail.SetSkinFromTail(_skin);
     }
 
     void Update() {
@@ -47,7 +43,6 @@ public class Snake : MonoBehaviour {
     public void Destroy() {
         _newTail.Destroy();
         Destroy(gameObject);
-
     }
 
     /* //Реализация поворота от знатаков геометрии

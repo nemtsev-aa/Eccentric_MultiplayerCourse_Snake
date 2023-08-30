@@ -10,8 +10,9 @@ export class Vector2Float extends Schema{
 export class Player extends Schema {
     @type("number") x = Math.floor(Math.random() * 256)-128;
     @type("number") z = Math.floor(Math.random() * 256)-128;
-    @type("uint8") d = 2;
+    @type("uint8") d = 0;
     @type("uint8") sId = 0;
+    @type("uint16") score = 0;
 }
 
 export class State extends Schema {
@@ -32,6 +33,9 @@ export class State extends Schema {
 
         apple.x = Math.floor(Math.random() * 256)-128;
         apple.z = Math.floor(Math.random() * 256)-128;
+
+        player.score++;
+        player.d = Math.round(player.score/3);
     }
 
     createPlayer(sessionId: string, sId: number) {
