@@ -3,21 +3,28 @@ using UnityEngine;
 public class Snake : MonoBehaviour {
     public float Speed { get { return _speed; } }
     public Transform GetHeadTransform { get { return _head.transform; } }
-
+    [SerializeField] private int _playerLayer = 6;
     [SerializeField] private Transform _head;
     [SerializeField] private Tail _tailPrefab;
     [SerializeField] private AppearanceManager _appearanceManager;
-
     [SerializeField] private float _speed = 2f;
 
     private Vector3 _targetDirection = Vector3.zero;
     private Tail _newTail;
     private SkinData _skin; 
 
-    public void Init(int detailCount, SkinData skin) {
+    public void Init(int detailCount, SkinData skin, bool IsPlayer = false) {
+        if (IsPlayer) {
+            gameObject.layer = _playerLayer;
+            Transform[] childrens = GetComponentsInChildren<Transform>();
+            foreach (var iChildren in childrens) {
+                iChildren.gameObject.layer = _playerLayer;
+            }
+        }
+
         _skin = skin;
         _newTail = Instantiate(_tailPrefab, transform.position, Quaternion.identity);
-        _newTail.Init(_head, _speed, detailCount);
+        _newTail.Init(_head, _speed, detailCount, _playerLayer, IsPlayer);
 
         _appearanceManager.SetSkin(skin);
         _newTail.SetSkinFromDetails(skin);

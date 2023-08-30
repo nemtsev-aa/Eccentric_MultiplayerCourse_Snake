@@ -5,6 +5,7 @@ public class PlayerAim : MonoBehaviour {
     
     [SerializeField] private float _rotateSpeed = 90f;
     [SerializeField] private float _overlapRadius = 0.5f;
+    [SerializeField] private LayerMask _collisionLayer;
     private Vector3 _targetDirection = Vector3.zero;
     private float _speed;
     private Transform _snakeHead;
@@ -24,10 +25,12 @@ public class PlayerAim : MonoBehaviour {
     }
 
     private void CheckCollision() {
-        Collider[] colliders = Physics.OverlapSphere(_snakeHead.position, _overlapRadius);
+        Collider[] colliders = Physics.OverlapSphere(_snakeHead.position, _overlapRadius, _collisionLayer);
         for (int i = 0; i < colliders.Length; i++) {
             if (colliders[i].TryGetComponent(out Apple apple)) {
                 apple.Collect();
+            } else {
+                GameOver();
             }
         }
     }
@@ -47,5 +50,10 @@ public class PlayerAim : MonoBehaviour {
 
     public void GetMoveInfo(out Vector3 position) {
         position = transform.position;
+    }
+
+    private void GameOver() {
+        FindObjectOfType<Controller>().Destroy();
+        Destroy(gameObject);
     }
 }

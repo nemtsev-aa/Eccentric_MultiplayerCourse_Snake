@@ -46,6 +46,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rotateSpeed: 90
+  _overlapRadius: 0.5
+  _collisionLayer:
+    serializedVersion: 2
+    m_Bits: 55
 --- !u!1 &2878249675160981949
 GameObject:
   m_ObjectHideFlags: 0
