@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Colyseus;
 using Unity.VisualScripting;
+using System;
 
 public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
     [field: SerializeField] public SkinsManager Skins { get; private set; }
@@ -10,6 +11,8 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
     [SerializeField] private Controller _controllerPrefab;
     [SerializeField] private Snake _snakePrefab;
 
+    [SerializeField] private Apple _applePrefab;
+    private Dictionary<Vector2Float, Apple> _apples = new Dictionary<Vector2Float, Apple>();
     private const string _gameRoomName = "state_handler";
     private ColyseusRoom<State> _room;
 
@@ -40,6 +43,10 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
 
         _room.State.players.OnAdd += CreateEnemy;
         _room.State.players.OnRemove += RemoveEnemy;
+
+        _room.State.apples.ForEach(CreateApple);
+        _room.State.apples.OnAdd += (key, apple) => CreateApple(apple);
+        _room.State.apples.OnRemove += RemoveApple;
     }
 
     public void SendMessage(string key, Dictionary<string, object> data) {
@@ -97,6 +104,23 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
         PointerManager.Instance.RemoveFromList(enemy.transform.GetComponent<EnemyPointer>());
         enemy.Destroy();
         _enemies.Remove(key);
+    }
+    #endregion
+
+    #region Apple
+    private void CreateApple(Vector2Float vector2Float) {
+        Vector3 position = new Vector3(vector2Float.x, 0f, vector2Float.z);
+        Apple apple = Instantiate(_applePrefab, position, Quaternion.identity);
+        apple.Init(vector2Float);
+        _apples.Add(vector2Float, apple);
+    }
+
+    private void RemoveApple(int key, Vector2Float vector2Float) {
+        if (_apples.ContainsKey(vector2Float) == false) return;
+
+        Apple apple = _apples[vector2Float];
+        _apples.Remove(vector2Float);
+        apple.Destroy();
     }
     #endregion
 }
