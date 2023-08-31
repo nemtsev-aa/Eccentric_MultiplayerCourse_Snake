@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PointerManager : MonoBehaviour {
+    public static PointerManager Instance;
     [SerializeField] Camera _camera;
     [SerializeField] PointerIcon _pointerPrefab;
     
     private Dictionary<EnemyPointer, PointerIcon> _dictionary = new Dictionary<EnemyPointer, PointerIcon>();
     private Transform _playerTransform;
 
-    public static PointerManager Instance;
     private void Awake() {
         if (Instance == null) {
             Instance = this;

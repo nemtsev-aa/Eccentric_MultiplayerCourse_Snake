@@ -8,6 +8,7 @@ export class Vector2Float extends Schema{
 }
 
 export class Player extends Schema {
+    @type("string") login = "";
     @type("number") x = Math.floor(Math.random() * 256)-128;
     @type("number") z = Math.floor(Math.random() * 256)-128;
     @type("uint8") d = 0;
@@ -39,8 +40,9 @@ export class State extends Schema {
         player.d = Math.round(player.score/3);
     }
 
-    createPlayer(sessionId: string, sId: number) {
+    createPlayer(sessionId: string, login: string, sId: number) {
         const player = new Player();
+        player.login = login;
         player.sId = sId;
         this.players.set(sessionId, player);
     }
@@ -126,7 +128,7 @@ export class StateHandlerRoom extends Room<State> {
 
     onJoin (client: Client, data: any) {
         console.log("onJoin created!", data);
-        this.state.createPlayer(client.sessionId, data.sId);
+        this.state.createPlayer(client.sessionId, data.login, data.sId);
     }
 
     onLeave (client) {

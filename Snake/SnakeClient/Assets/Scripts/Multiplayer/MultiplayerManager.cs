@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Colyseus;
 using Unity.VisualScripting;
+using TMPro;
+using System.Linq;
 
 public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
     [field: SerializeField] public SkinsManager Skins { get; private set; }
@@ -22,9 +24,10 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
         InitializeClient();
     }
 
-    public async void Connection(int skinId) {
+    public async void Connection() {
         Dictionary<string, object> data = new Dictionary<string, object>() {
-            {"sId", skinId }
+            {"sId", PlayerSettings.Instance.SkinId },
+            {"login", PlayerSettings.Instance.Login }
         };
 
         _room = await client.JoinOrCreate<State>(_gameRoomName, data);
@@ -82,6 +85,7 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
         controller.Init(_room.SessionId, playerAim, player, snake);
 
         PointerManager.Instance.SetPlayerTransform(playerAim.transform);
+        AddLeader(_room.SessionId, player);
     }
     #endregion
 
@@ -99,9 +103,13 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
         enemyPointer.Init(enemyHealth);
         newEnemy.Init(key, player, snake);
         _enemies.Add(key, newEnemy);
+
+        AddLeader(key, player);
     }
 
     private void RemoveEnemy(string key, Player value) {
+        RemoveLeader(key);
+
         if (_enemies.ContainsKey(key) == false || _enemies.Count == 0) {
             Debug.LogError("ѕопытка удалени€ врага, отсутствующегов списке!");
             return;
@@ -129,5 +137,54 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
         _apples.Remove(vector2Float);
         apple.Destroy();
     }
+    #endregion
+
+    #region LeaderBoard
+    private class LoginScorePair {
+        public string login;
+        public float score;
+    }
+
+    [SerializeField] private TextMeshProUGUI _text;
+    Dictionary<string, LoginScorePair> _leaders = new Dictionary<string, LoginScorePair>();
+
+    private void AddLeader(string sessionId, Player player) {
+        if (_leaders.ContainsKey(sessionId)) return;
+
+        _leaders.Add(sessionId, new LoginScorePair {
+            login = player.login,
+            score = player.score
+        });
+
+        UpdateBoard();
+    }
+
+    private void RemoveLeader(string sessionID) {
+        if (_leaders.ContainsKey(sessionID) == false) return;
+        _leaders.Remove(sessionID);
+
+        UpdateBoard();
+    }
+
+    public void UpdateScore(string sessionId, int score) {
+        if (_leaders.ContainsKey(sessionId) == false) return;
+
+        _leaders[sessionId].score = score;
+        UpdateBoard();
+    }
+
+    private void UpdateBoard() {
+        int topCount = Mathf.Clamp(_leaders.Count, 0, 8);
+        var top8 = _leaders.OrderByDescending(pair => pair.Value.score).Take(topCount);
+        string text = "";
+        int i = 1;
+        foreach (var item in top8) {
+            text += $"{i}. {item.Value.login}: {item.Value.score}\n";
+            i++;
+        }
+        _text.text = text;
+    }
+
+
     #endregion
 }
