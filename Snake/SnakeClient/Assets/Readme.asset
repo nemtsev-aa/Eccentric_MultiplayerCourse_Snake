@@ -1,34 +1,27 @@
-%YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fcf7219bab7fe46a1ad266029b2fee19, type: 3}
-  m_Name: Readme
-  m_EditorClassIdentifier: 
-  icon: {fileID: 2800000, guid: 727a75301c3d24613a3ebcec4a24c2c8, type: 3}
-  title: URP Empty Template
-  sections:
-  - heading: Welcome to the Universal Render Pipeline
-    text: This template includes the settings and assets you need to start creating with the Universal Render Pipeline.
-    linkText: 
-    url:
-  - heading: URP Documentation
-    text:
-    linkText: Read more about URP
-    url: https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@latest
-  - heading: Forums
-    text:
-    linkText: Get answers and support
-    url: https://forum.unity.com/forums/universal-render-pipeline.383/
-  - heading: Report bugs
-    text:
-    linkText: Submit a report
-    url: https://unity3d.com/unity/qa/bug-reporting
-  loadedLayout: 1
+ECCENTRICGAMES_MULTIPLAYERCOURSE_SNAKE
+Сцены
+1.	MainMenu – сцена основного меню;
+2.	Login – сцена для сбора данных пользователя перед подключением к игре;
+3.	MultiplayerSnake – сцена, реализующая игровой процесс.
+Сервисы
+1.	Bootstrapper – точка входа в приложение.
+2.	ApplicationManager – менеджер состояний приложения. Организует переход между сценами.
+3.	Save Manager – менеджер сохранений (json и binary).
+4.	Service Locator – менеджер сервисов (Singleton). Организует хранение и доступ к сервисам (IService).
+5.	Services Loader – загрузчик сервисов сцен, базовый класс. Запускается в момент загрузки сцены, регистрирует и инициализирует сервисы в нужном порядке.
+-	ServiceLoader_MainMenu - загрузчик сервисов сцены «MainMenu»;
+- ServiceLoader_Login - загрузчик сервисов сцены «Login»;
+- ServiceLoader_Game - загрузчик сервисов сцены «MultiplayerSnake».
+6.	EventBus – шина событий (Singleton). Организует хранение и вызов сигналов (Signal) для осуществления взаимодействия между различными сервисами и классами.
+7.	Multiplayer Manager – менеджер осуществляющий взаимодействие клиент-сервер. Наследник ColyseusManager.
+8.	PointerManager – указатель врагов (Singleton). Создаёт маркеры врагов по 4-м краям экрана.
+Интерфейс
+1.	Dialog – отдельное окно интерфейса, базовый класс. Список классов-наследников:
+- MainMenuDialog – окно основного меню;
+- LoginMenuDialog – окно выбора имени и скина персонажа;
+- GameStateDialog – окно игрового интерфейса;
+- PauseDialog – меню паузы;
+- SettingsDialog – меню настроек;
+2.	DialogManager – менеджер окон (Singleton). Хранит пути к префабам окон, содержит публичный метод для создания окна соответствующего типа.   
+3.	GUIHolder – элемент сцены, контейнер для создаваемых окон.
+
