@@ -1,13 +1,10 @@
+using CustomEventBus;
+using CustomEventBus.Signals;
 using System.Collections.Generic;
 using UnityEngine;
 using Colyseus;
-using Unity.VisualScripting;
-using TMPro;
-using System.Linq;
 
-public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
-    [field: SerializeField] public SkinsManager Skins { get; private set; }
-
+public class MultiplayerManager : ColyseusManager<MultiplayerManager>, IService, CustomEventBus.IDisposable {
     [SerializeField] private PlayerAim _playerAim;
     [SerializeField] private Controller _controllerPrefab;
     [SerializeField] private Snake _snakePrefab;
@@ -16,18 +13,28 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
     private Dictionary<Vector2Float, Apple> _apples = new Dictionary<Vector2Float, Apple>();
     private const string _gameRoomName = "state_handler";
     private ColyseusRoom<State> _room;
+ 
+    private EventBus _eventBus;
+    private PlayerSettings _playerSettings; 
+    private SkinsManager _skinsManager;
 
     #region Server
-    protected override void Awake() {
+    public void Init(EventBus eventBus, PlayerSettings playerSettings, SkinsManager skinsManager) {
+        _eventBus = eventBus;
+        _playerSettings = playerSettings;
+        _skinsManager = skinsManager;
+
         base.Awake();
-        DontDestroyOnLoad(gameObject);
         InitializeClient();
+
+        _eventBus.Subscribe((GameStartStateSignal signal) => Connection());
     }
 
     public async void Connection() {
+
         Dictionary<string, object> data = new Dictionary<string, object>() {
-            {"sId", PlayerSettings.Instance.SkinId },
-            {"login", PlayerSettings.Instance.Login }
+            {"sId", _playerSettings.SkinId },
+            {"login", _playerSettings.Login }
         };
 
         _room = await client.JoinOrCreate<State>(_gameRoomName, data);
@@ -67,6 +74,10 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
     public void LeaveRoom() {
         _room?.Leave();
     }
+
+    public void Dispose() {
+        _eventBus.Unsubscribe((GameStartStateSignal signal) => Connection());
+    }
     #endregion
 
     #region Player
@@ -75,7 +86,7 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
         Quaternion rotation = Quaternion.identity;
         Snake snake = Instantiate(_snakePrefab, position, rotation);
 
-        SkinData skin = Skins.GetSkin(player.sId);
+        SkinData skin = _skinsManager.GetSkin(player.sId);
         snake.Init(player.d, skin, true);
 
         PlayerAim playerAim = Instantiate(_playerAim, position, rotation);
@@ -85,7 +96,8 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
         controller.Init(_room.SessionId, playerAim, player, snake);
 
         PointerManager.Instance.SetPlayerTransform(playerAim.transform);
-        AddLeader(_room.SessionId, player);
+
+        _eventBus.Invoke(new AddLeaderSignal(_room.SessionId, player));
     }
     #endregion
 
@@ -94,21 +106,22 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
     private void CreateEnemy(string key, Player player) {
         Vector3 position = new Vector3(player.x, 0f, player.z);
         Snake snake = Instantiate(_snakePrefab, position, Quaternion.identity);
-        SkinData skin = Skins.GetSkin(player.sId);
+        SkinData skin = _skinsManager.GetSkin(player.sId);
         snake.Init(player.d, skin);
 
-        EnemyController newEnemy = snake.AddComponent<EnemyController>();
-        EnemyHealth enemyHealth = snake.AddComponent<EnemyHealth>();
-        EnemyPointer enemyPointer = snake.AddComponent<EnemyPointer>();
+        EnemyController newEnemy = snake.gameObject.AddComponent<EnemyController>();
+        EnemyHealth enemyHealth = snake.gameObject.AddComponent<EnemyHealth>();
+        EnemyPointer enemyPointer = snake.gameObject.AddComponent<EnemyPointer>();
         enemyPointer.Init(enemyHealth);
         newEnemy.Init(key, player, snake);
         _enemies.Add(key, newEnemy);
 
-        AddLeader(key, player);
+        _eventBus.Invoke(new AddLeaderSignal(key, player));
     }
 
     private void RemoveEnemy(string key, Player value) {
-        RemoveLeader(key);
+
+        _eventBus.Invoke(new RemoveLeaderSignal(key));
 
         if (_enemies.ContainsKey(key) == false || _enemies.Count == 0) {
             Debug.LogError("ѕопытка удалени€ врага, отсутствующегов списке!");
@@ -137,54 +150,8 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager> {
         _apples.Remove(vector2Float);
         apple.Destroy();
     }
-    #endregion
-
-    #region LeaderBoard
-    private class LoginScorePair {
-        public string login;
-        public float score;
-    }
-
-    [SerializeField] private TextMeshProUGUI _text;
-    Dictionary<string, LoginScorePair> _leaders = new Dictionary<string, LoginScorePair>();
-
-    private void AddLeader(string sessionId, Player player) {
-        if (_leaders.ContainsKey(sessionId)) return;
-
-        _leaders.Add(sessionId, new LoginScorePair {
-            login = player.login,
-            score = player.score
-        });
-
-        UpdateBoard();
-    }
-
-    private void RemoveLeader(string sessionID) {
-        if (_leaders.ContainsKey(sessionID) == false) return;
-        _leaders.Remove(sessionID);
-
-        UpdateBoard();
-    }
-
-    public void UpdateScore(string sessionId, int score) {
-        if (_leaders.ContainsKey(sessionId) == false) return;
-
-        _leaders[sessionId].score = score;
-        UpdateBoard();
-    }
-
-    private void UpdateBoard() {
-        int topCount = Mathf.Clamp(_leaders.Count, 0, 8);
-        var top8 = _leaders.OrderByDescending(pair => pair.Value.score).Take(topCount);
-        string text = "";
-        int i = 1;
-        foreach (var item in top8) {
-            text += $"{i}. {item.Value.login}: {item.Value.score}\n";
-            i++;
-        }
-        _text.text = text;
-    }
 
 
     #endregion
+
 }

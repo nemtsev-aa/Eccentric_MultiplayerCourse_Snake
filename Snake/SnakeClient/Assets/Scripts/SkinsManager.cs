@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SkinsManager : MonoBehaviour {
+public class SkinsManager : MonoBehaviour, IService {
     public int CurrentSkinId => _currentSkinId;
     public IEnumerable<SkinData> Skins => _skins;
     [SerializeField] private List<SkinData> _skins = new List<SkinData>();

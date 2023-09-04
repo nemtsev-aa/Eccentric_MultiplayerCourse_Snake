@@ -16,7 +16,7 @@ public class Controller : MonoBehaviour {
     private bool _hideCursor;
 
     public void Init(string clientID, PlayerAim aim, Player player, Snake snake) {
-        _multiplayerManager = MultiplayerManager.Instance;
+        _multiplayerManager = ServiceLocator.Current.Get<MultiplayerManager>();
         _clientID = clientID;
         _player = player;
         _aim = aim;
@@ -77,7 +77,14 @@ public class Controller : MonoBehaviour {
                     _snake.SetDetailCount((byte)changes[i].Value);
                     break;
                 case "score":
-                    _multiplayerManager.UpdateScore(_clientID, (ushort)changes[i].Value);
+                    int score = (ushort)changes[i].Value;
+                    ServiceLocator.Current.Get<LeaderBoard>().UpdateScore(_clientID, score);
+                    if (score > 0) {
+                        Vector3 oldPosition = _camera.transform.localPosition;
+                        Vector3 newPosition = Vector3.up * (_cameraOffsetY + score / 2);
+                        _camera.transform.localPosition = Vector3.Lerp(oldPosition, newPosition, Time.deltaTime * 2f);
+                    }
+                    
                     break;
                 default:
                     Debug.LogWarning($"Не обрабатывается изменение поля {changes[i].Field}");

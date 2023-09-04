@@ -9,8 +9,8 @@ export class Vector2Float extends Schema{
 
 export class Player extends Schema {
     @type("string") login = "";
-    @type("number") x = Math.floor(Math.random() * 256)-128;
-    @type("number") z = Math.floor(Math.random() * 256)-128;
+    @type("number") x = Math.floor(Math.random() * 128)-128;
+    @type("number") z = Math.floor(Math.random() * 128)-128;
     @type("uint8") d = 0;
     @type("uint8") sId = 0;
     @type("uint16") score = 0;

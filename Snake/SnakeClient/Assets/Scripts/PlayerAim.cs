@@ -54,6 +54,7 @@ public class PlayerAim : MonoBehaviour {
     }
 
     private void Rotate() {
+        if (_targetDirection == Vector3.zero) return;
         Quaternion targetRotation = Quaternion.LookRotation(_targetDirection);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, Time.deltaTime * _rotateSpeed);
     }

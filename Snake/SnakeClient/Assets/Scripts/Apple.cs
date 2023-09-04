@@ -21,12 +21,12 @@ public class Apple : MonoBehaviour {
                     position.z = (float)change.Value;
                     break;
                 default:
-                    Debug.LogWarning($"яблоко не реагирует на изменение пол€ {change.Field}");
+                    //Debug.LogWarning($"яблоко не реагирует на изменение пол€ {change.Field}");
                 break;
             }
         }
 
-        Debug.Log($"яблоко переместилось с позиции {transform.position}, в {position}");
+        //Debug.Log($"яблоко переместилось с позиции {transform.position}, в {position}");
         transform.position = position;
         gameObject.SetActive(true);
     }
@@ -41,7 +41,7 @@ public class Apple : MonoBehaviour {
             {"id", _apple.id }
         };
 
-        MultiplayerManager.Instance.SendMessage("collect", data);
+        ServiceLocator.Current.Get<MultiplayerManager>().SendMessage("collect", data);
         gameObject.SetActive(false);
     }
 }

@@ -1,23 +1,17 @@
 using UnityEngine;
 
-public class PlayerSettings : MonoBehaviour {
-    public static PlayerSettings Instance;
+public class PlayerSettings : IService {
     public string Login { get; private set; }
     public int SkinId { get; private set; }
-    
-    private void Awake() {
+    public int Score { get; private set; }
 
-        if (Instance) {
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
+    public PlayerSettings(string login, int skinId, int score) {
+        Login = login;
+        SkinId = skinId;
+        Score = score;
     }
 
-    private void OnDestroy() {
-        if (Instance == this) Instance = null;
+    public PlayerSettings() {
     }
 
     public void SetLogin(string login) {
@@ -26,5 +20,9 @@ public class PlayerSettings : MonoBehaviour {
     
     public void SetSkinId(int id) {
         SkinId = id;
+    }
+
+    public void SetScore(int score) {
+        Score = score;
     }
 }
